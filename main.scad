@@ -1,6 +1,6 @@
 include <constants.scad>
-
-close = false;
+use <threads-library.scad>
+close = 0;
 
 
 mirror_normal=[1,0];
@@ -137,11 +137,38 @@ box_ear();
 mirror(mirror_normal)
   box_ear();
 
+module rod() {
+  difference() {
+    thread_for_screw(diameter=rod_outer_d, length=rod_len);
+    translate([0,0,-EPSILON])
+      cylinder(h=rod_len+2*EPSILON,d=rod_inner_d);
+  }
+}
+
+module cap() {
+  difference() {
+    cylinder(h=rod_len+cap_stub_len,d=cap_outer_d);
+    translate([0,0,-EPSILON])
+      thread_for_nut(diameter=rod_outer_d, length=rod_len+EPSILON,usrclearance=-rod_tightness);
+    translate([0,0,rod_len-EPSILON])
+      cylinder(h=cap_stub_len+2*EPSILON,d1=cap_stub_bot_d,d2=cap_stub_top_d);
+  }
+}
+
 lid_h = handler_hinge_r / tan(45/2);
 module lid() {
   color([1,1,.6],.7)
-  box(outer_pos, lid_h);
-  
+  linear_extrude(lid_h)
+  difference() {
+    box2d(outer_pos);
+    
+    // antenna hole
+    translate([rod_x, rod_y])
+    circle(d=rod_inner_d);
+  }
+  // rod
+  translate([rod_x, rod_y, lid_h - EPSILON])
+  rod();
   // round ridge
   color([.4,.8,.4])
   translate([0,0,-round_ridge+EPSILON])
@@ -169,6 +196,12 @@ module lid() {
 
 translate([0,0,box_h+(close?0:50)])
 lid();
+
+rod_z=box_h+lid_h+(close?0:70);
+
+color([1,1,.6], .7)
+translate([rod_x, rod_y, rod_z])
+  cap();
 
 module handler2d() {
   circle_translate = [5,5];

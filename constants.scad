@@ -32,9 +32,8 @@ lid_thickness = 6;
 rod_to_front=20;
 rod_to_left=40;
 
-rod_x=-rod_to_left;
-rod_y=-rod_to_front;
-rod_z=box_h/2;
+rod_x=-box_l/2+box_thickness+rod_to_left;
+rod_y=-box_w/2+box_thickness+rod_to_front;
 
 pad_thickness = 5;
 bolt_len = 20;
