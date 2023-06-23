@@ -111,14 +111,14 @@ function position(index_to_outer)=let (len=box_thickness*index_to_outer/5)[box_l
 difference() {
   box(outer_pos, box_h);
   
-  translate([0,0,box_thickness+EPSILON])
+  translate([0,0,box_thickness])
   box(inner_pos, box_h-box_thickness);
   
-  translate([0,0,box_h-box_thickness+EPSILON])
-  box(position(1), box_thickness);
+  translate([0,0,box_h-box_thickness])
+  box(position(1), box_thickness+EPSILON);
 }
 // inner round ridge
-translate([0,0,box_h-box_thickness+EPSILON])
+translate([0,0,box_h-box_thickness-EPSILON])
 linear_extrude(box_thickness)
 difference() {
   box2d(position(4));
@@ -152,10 +152,10 @@ module lid() {
   }
   
   // line ridge
-  translate([0,(-box_w+line_ridge)/2, lid_h+line_ridge/2])
+  translate([0,(-box_w+line_ridge)/2, lid_h+line_ridge/2-EPSILON])
   cube([box_l-30,line_ridge,line_ridge],center=true);
   
-  translate([0,box_w/2-EPSILON]){
+  translate([0,box_w/2-EPSILON]) {
     translate([-hinge_center_x,0])
       whistle();
     translate([hinge_center_x,0])
@@ -179,7 +179,7 @@ module handler2d() {
       translate(circle_translate)
         circle(r=handler_hinge_r);
       h=lid_h+box_h;
-      translate([0,5])
+      translate([0,handler_hinge_r])
         polygon([
           [0,0],
           [handler_hinge_d,0],
@@ -201,8 +201,8 @@ module handler(width) {
   difference() {
     linear_extrude(width)
       handler2d();
-    translate([0,0,(width-handler_hinge_len)/2])
-      cube([handler_hinge_r*2,handler_hinge_r*2,handler_hinge_len]);
+    translate([-EPSILON,0,(width-handler_hinge_len)/2])
+      cube([(handler_hinge_r+EPSILON)*2,handler_hinge_r*2,handler_hinge_len]);
   }
 }
 
